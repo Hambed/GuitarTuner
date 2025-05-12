@@ -13,26 +13,39 @@ $freq = "";
 $temp = "";
 $humidity = "";
 
+// Timeout settings for serial read
+$timeout = 5;
+$start_time = time();
+
+// Read frequency from device
+$handle = @fopen('/dev/rfcomm0', 'r');
+if ($handle) {
+    stream_set_blocking($handle, 0);
+    while (time() - $start_time < $timeout) {
+        $line = fgets($handle);
+        if ($line !== false) {
+            $line = trim($line);
+            $freq = preg_replace('/[^0-9.]/', '', $line);
+            break;
+        }
+    }
+    fclose($handle);
+}
+
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Run sensor script from the virtual environment
-    // Source the virtual environment and run the python script
-    $output = shell_exec("source /home/hami/Project/venv/bin/activate && /home/hami/Project/venv/bin/python3 /home/hami/Project/bme280_read.py");
-
+    // Run sensor script and get the JSON output
+    $output = shell_exec("source /home/hami/Project/venv/bin/activate && python3 /home/hami/Project/bme280_read.py");
     if ($output) {
-        // Decode the JSON output from the Python script
+        // Decode the JSON output
         $data = json_decode($output, true);
-
-        // Check if decoding was successful
-        if ($data) {
+        
+        if (isset($data["temperature"])) {
             $temp = $data["temperature"];
-            $humidity = $data["humidity"];
-        } else {
-            // Handle case where JSON decoding fails
-            $message = "Error decoding sensor data.";
         }
-    } else {
-        $message = "Error executing Python script.";
+        if (isset($data["humidity"])) {
+            $humidity = $data["humidity"];
+        }
     }
 
     // Save to DB
@@ -41,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         error_log("Connection failed: " . $conn->connect_error);
     } else {
         $stmt = $conn->prepare("INSERT INTO logs (user_id, note_frequency, temperature, humidity) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("isss", $user_id, $freq, $temp, $humidity);
+        $stmt->bind_param("issd", $user_id, $freq, $temp, $humidity); // Make sure the temperature and humidity are treated as doubles
         if ($stmt->execute()) {
             $message = "Tuning data saved successfully.";
         } else {
