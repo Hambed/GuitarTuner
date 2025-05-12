@@ -3,7 +3,7 @@ session_start();
 
 // Make sure user is logged in
 if (!isset($_SESSION["user_id"])) {
-    header("Location: login.php"); // or wherever your login page is
+    header("Location: login.php"); // Redirect to login page if not logged in
     exit;
 }
 
@@ -13,12 +13,12 @@ $freq = "";
 $temp = "";
 $humidity = "";
 
-// Read latest line from Bluetooth (rfcomm0)
+// Read the latest line from Bluetooth (rfcomm0) in read-only mode
 $lines = @file('/dev/rfcomm0');
 if ($lines !== false && count($lines) > 0) {
-    $lastLine = trim(end($lines));
-    // Assuming frequency is a 6-char string, newline-terminated
-    $freq = htmlspecialchars($lastLine); // Safe to echo in HTML
+    $lastLine = trim(end($lines));  // Get the last line of input
+    // Assuming frequency is a 6-character string, newline-terminated
+    $freq = htmlspecialchars($lastLine);  // Safe to display in HTML
 }
 
 // Handle form submission
@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
     <title>Tuning Session</title>
-    <meta http-equiv="refresh" content="1"> <!-- Refresh every second -->
+    <meta http-equiv="refresh" content="1"> <!-- Refresh the page every 1 second to update frequency -->
 </head>
 <body>
     <h1>Welcome, <?php echo htmlspecialchars($username); ?>!</h1>
