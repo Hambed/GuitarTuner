@@ -14,12 +14,15 @@ $temp = "";
 $humidity = "";
 
 // Set timeout duration (in seconds)
-$timeout = 1; // Timeout after 5 seconds
+$timeout = 5; // Timeout after 5 seconds
 $start_time = time(); // Get current time to track timeout
 
-// Try to open /dev/rfcomm0
+// Try to open /dev/rfcomm0 with a non-blocking mode
 $handle = fopen('/dev/rfcomm0', 'r');
 if ($handle) {
+    // Set the file to non-blocking mode so it doesn't hang
+    stream_set_blocking($handle, 0);
+    
     // Loop until we have data or timeout
     while (time() - $start_time < $timeout) {
         // Read a line from the device
