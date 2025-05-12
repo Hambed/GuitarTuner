@@ -14,7 +14,7 @@ $temp = "";
 $humidity = "";
 
 // Set timeout duration (in seconds)
-$timeout = 5; // Timeout after 5 seconds
+$timeout = 1; // Timeout after 5 seconds
 $start_time = time(); // Get current time to track timeout
 
 // Try to open /dev/rfcomm0
