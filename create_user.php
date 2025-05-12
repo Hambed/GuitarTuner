@@ -1,6 +1,6 @@
-<head?php
+<?php
 
-if($_SERVER[REQUEST_METHOD"] == "POST)
+if($_SERVER["REQUEST_METHOD"] == "POST")
 {
     $username = trim($_POST["username"]);
     $password = $_POST["password"];
@@ -11,17 +11,17 @@ if($_SERVER[REQUEST_METHOD"] == "POST)
         echo"Username and Password are Required.";
     }
     
-    elseif(strlen($username) > 11)
+    elseif(strlen($username)>11)
     {
         echo "Username must be 11 Characters or Less";
     }
     else
     {
         //Hash the password
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = password_hash(password: $password, algo: PASSWORD_DEFAULT);
 
         //Connect to Database
-        $conn = new msqli("localhost", "php", "0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY", "TunerDB");
+        $conn = new mysqli(hostname:"localhost", username:"php", password:"0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY", database:"TunerDB");
 
         if($conn->connect_error)
         {
@@ -29,8 +29,8 @@ if($_SERVER[REQUEST_METHOD"] == "POST)
         }
 
         //insert data to TunerDB
-        $stmt = $conn->prepare("INSERT INTO users (username, password_hash) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $hashed_password);
+        $stmt = $conn->prepare(query:"INSERT INTO users (username, password_hash) VALUES (?, ?)");
+        $stmt->bind_param("ss",$username,$hashed_password);
 
         if($stmt->execute())
         {
