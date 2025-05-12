@@ -16,8 +16,9 @@ $humidity = "";
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Run sensor script from the virtual environment
-    $output = shell_exec("/home/hami/Project/venv/bin/python3 /home/hami/Project/bme280_read.py");
-    
+    // Source the virtual environment and run the python script
+    $output = shell_exec("source /home/hami/Project/venv/bin/activate && /home/hami/Project/venv/bin/python3 /home/hami/Project/bme280_read.py");
+
     if ($output) {
         // Decode the JSON output from the Python script
         $data = json_decode($output, true);
