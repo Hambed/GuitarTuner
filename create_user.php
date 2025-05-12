@@ -21,7 +21,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         $hashed_password = password_hash(password: $password, algo: PASSWORD_DEFAULT);
 
         //Connect to Database
-        $conn = new mysqli(hostname:"localhost", username:"php", password:"0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY", database:"TunerDB");
+        $conn = new mysqli("localhost","php","0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY","TunerDB");
 
         if($conn->connect_error)
         {
@@ -55,7 +55,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 </head>
 <body>
     <h1>Create A New User</h1>
-    <form>
+    <form method="post" action="create_user.php">
         <label>Username:</label>
         <input type="text" name="username" maxlength="11" required><br><br>
         <label>Password:</label>
