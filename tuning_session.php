@@ -13,39 +13,25 @@ $freq = "";
 $temp = "";
 $humidity = "";
 
-// Timeout settings for serial read
-$timeout = 5;
-$start_time = time();
-
-// Read frequency from device
-$handle = @fopen('/dev/rfcomm0', 'r');
-if ($handle) {
-    stream_set_blocking($handle, 0);
-    while (time() - $start_time < $timeout) {
-        $line = fgets($handle);
-        if ($line !== false) {
-            $line = trim($line);
-            $freq = preg_replace('/[^0-9.]/', '', $line);
-            break;
-        }
-    }
-    fclose($handle);
-}
-
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Run sensor script
-    $output = shell_exec("python3 /home/hami/Project/bme280_read.py");
+    // Run sensor script from the virtual environment
+    $output = shell_exec("/home/hami/Project/venv/bin/python3 /home/hami/Project/bme280_read.py");
+    
     if ($output) {
-        $output_lines = explode("\n", trim($output));
-        foreach ($output_lines as $line) {
-            if (str_starts_with($line, "Temperature:")) {
-                $temp = trim(str_replace("Temperature:", "", $line));
-            }
-            if (str_starts_with($line, "Humidity:")) {
-                $humidity = trim(str_replace("Humidity:", "", $line));
-            }
+        // Decode the JSON output from the Python script
+        $data = json_decode($output, true);
+
+        // Check if decoding was successful
+        if ($data) {
+            $temp = $data["temperature"];
+            $humidity = $data["humidity"];
+        } else {
+            // Handle case where JSON decoding fails
+            $message = "Error decoding sensor data.";
         }
+    } else {
+        $message = "Error executing Python script.";
     }
 
     // Save to DB
