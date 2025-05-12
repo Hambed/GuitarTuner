@@ -13,12 +13,27 @@ $freq = "";
 $temp = "";
 $humidity = "";
 
-// Read the latest line from Bluetooth (rfcomm0) in read-only mode
-$lines = @file('/dev/rfcomm0');
-if ($lines !== false && count($lines) > 0) {
-    $lastLine = trim(end($lines));  // Get the last line of input
-    // Assuming frequency is a 6-character string, newline-terminated
-    $freq = htmlspecialchars($lastLine);  // Safe to display in HTML
+// Set timeout duration (in seconds)
+$timeout = 5; // Timeout after 5 seconds
+$start_time = time(); // Get current time to track timeout
+
+// Try to open /dev/rfcomm0
+$handle = fopen('/dev/rfcomm0', 'r');
+if ($handle) {
+    // Loop until we have data or timeout
+    while (time() - $start_time < $timeout) {
+        // Read a line from the device
+        $line = fgets($handle);
+        if ($line !== false) {
+            $line = trim($line);  // Clean up the data
+            // Only keep numbers and periods in the frequency
+            $freq = preg_replace('/[^0-9.]/', '', $line);
+            break;  // Break the loop as we've read the data
+        }
+    }
+    fclose($handle);  // Close the connection to rfcomm0
+} else {
+    $freq = "No data available";  // Handle error if file can't be opened
 }
 
 // Handle form submission
@@ -39,7 +54,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $conn = new mysqli("localhost", "php", "0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY", "TunerDB");
     if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
-    $stmt = $conn->prepare("INSERT INTO log (user_id, frequency, temperature, humidity) VALUES (?, ?, ?, ?)");
+    // Updated SQL query with the correct table name 'logs'
+    $stmt = $conn->prepare("INSERT INTO logs (user_id, frequency, temperature, humidity) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("isss", $user_id, $freq, $temp, $humidity);
 
     if ($stmt->execute()) {
@@ -61,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
     <h1>Welcome, <?php echo htmlspecialchars($username); ?>!</h1>
-    <h2>Current Frequency: <?php echo $freq; ?></h2>
+    <h2>Current Frequency (from device): <?php echo $freq; ?></h2>
 
     <form method="post" action="">
         <input type="hidden" name="submit_tuning" value="1">
