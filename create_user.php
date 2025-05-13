@@ -35,6 +35,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         if($stmt->execute())
         {
             echo "User Created Successfully.";
+            header("Location: login.php?status=account_created");
+            exit;
         }
         else
         {
