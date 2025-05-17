@@ -2,7 +2,7 @@
 
 # CONFIGURATION — change these in production!
 DB_ROOT_PASS="RootPass123!"
-DB_NAME="my_project_db"
+DB_NAME="TunerDB"
 PHP_USER="php_user"
 PHP_PASS="PhpPass123!"
 APP_USER="app_user"
