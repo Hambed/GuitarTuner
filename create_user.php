@@ -21,7 +21,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         $hashed_password = password_hash(password: $password, algo: PASSWORD_DEFAULT);
 
         //Connect to Database
-        $conn = new mysqli("localhost","php","0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY","TunerDB");
+        $conn = new mysqli("localhost","[YOUR_PHP_USER]","[YOUR_PHP_PASSWORD]","TunerDB");
 
         if($conn->connect_error)
         {
