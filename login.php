@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST["password"];
 
     // Connect to DB
-    $conn = new mysqli("localhost", "php", "0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY", "TunerDB");
+    $conn = new mysqli("localhost","<Your_php_user>","your_php_password","TunerDB");
     if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
     $stmt = $conn->prepare("SELECT user_id, password_hash FROM users WHERE username = ?");
