@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
     // Save to DB
-    $conn = new mysqli("localhost", "php", "0s@48X+_tDL,E)cDC@n>9)UM7Lh:eY", "TunerDB");
+    $conn = new mysqli("localhost","[YOUR_PHP_USER]","[YOUR_PHP_PASSWORD]","TunerDB");
     if ($conn->connect_error) {
         error_log("Connection failed: " . $conn->connect_error);
         $message = "Database connection error."; // set message
