@@ -9,7 +9,7 @@ if (!isset($_SESSION["username"])) {
 
 $username = $_SESSION["username"];
 
-
+#code is incomplete but would refresh the frequency, and allow user to hit a button to send frequency,temp and humidity to logs table
 ?>
 
 <!DOCTYPE html>
